@@ -1,0 +1,59 @@
+From 1aa9f337c0b218fe896f674e4efe3b4be6fd30c7 Mon Sep 17 00:00:00 2001
+From: Jeff Zhang <e8035669@gmail.com>
+Date: Tue, 12 Sep 2023 13:02:00 +0000
+Subject: [PATCH] Use %zu instead of %ld when formatting size_t
+
+---
+ torch/csrc/autograd/python_function.cpp | 2 +-
+ torch/csrc/jit/python/python_list.cpp   | 2 +-
+ torch/csrc/utils/python_arg_parser.h    | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/torch/csrc/autograd/python_function.cpp b/torch/csrc/autograd/python_function.cpp
+index ba6331ed5ff9e3..968f5a67dfad29 100644
+--- a/torch/csrc/autograd/python_function.cpp
++++ b/torch/csrc/autograd/python_function.cpp
+@@ -508,7 +508,7 @@ static void _save_variables(
+       self->saved_variables.emplace_back(tensor, is_output);
+     } else {
+       throw torch::TypeError(
+-          "save_for_backward can only save variables, but argument %ld is of "
++          "save_for_backward can only save variables, but argument %zu is of "
+           "type %s",
+           i,
+           Py_TYPE(obj)->tp_name);
+diff --git a/torch/csrc/jit/python/python_list.cpp b/torch/csrc/jit/python/python_list.cpp
+index ee2e7a7612ed72..623ed926b0f84c 100644
+--- a/torch/csrc/jit/python/python_list.cpp
++++ b/torch/csrc/jit/python/python_list.cpp
+@@ -28,7 +28,7 @@ bool ScriptListIterator::done() const {
+ 
+ namespace {
+ py::list scriptListToPyList(const ScriptList& src) {
+-  py::list out(src.len());
++  py::list out((ptrdiff_t) src.len());
+   auto iter = src.iter();
+ 
+   size_t i = 0;
+diff --git a/torch/csrc/utils/python_arg_parser.h b/torch/csrc/utils/python_arg_parser.h
+index d9d14a83a9ccaf..1d38fcd50dcdb6 100644
+--- a/torch/csrc/utils/python_arg_parser.h
++++ b/torch/csrc/utils/python_arg_parser.h
+@@ -506,7 +506,7 @@ inline void throw_intlist_exception(
+     PyObject* obj,
+     size_t idx) {
+   throw TypeError(
+-      "%s(): argument '%s' must be %s, but found element of type %s at pos %ld",
++      "%s(): argument '%s' must be %s, but found element of type %s at pos %zu",
+       args->signature.name.c_str(),
+       args->signature.params[i].name.c_str(),
+       args->signature.params[i].type_name().c_str(),
+@@ -666,7 +666,7 @@ inline std::vector<double> PythonArgs::getDoublelist(int i) {
+       res[idx] = THPUtils_unpackDouble(obj);
+     } catch (const std::exception& e) {
+       throw TypeError(
+-          "%s(): argument '%s' must be %s, but found element of type %s at pos %ld",
++          "%s(): argument '%s' must be %s, but found element of type %s at pos %zu",
+           signature.name.c_str(),
+           signature.params[i].name.c_str(),
+           signature.params[i].type_name().c_str(),

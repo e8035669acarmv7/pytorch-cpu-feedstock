@@ -39,6 +39,12 @@ if [[ "$target_platform" == "osx-64" ]]; then
   export CFLAGS="$CFLAGS -DTARGET_OS_OSX=1"
 fi
 
+if [[ "$target_platform" == "linux-armv7l" ]]; then
+    # https://github.com/Maratyszcza/NNPACK/issues/94
+    export CFLAGS="$CFLAGS -mfp16-format=ieee"
+    export CXXFLAGS="$CXXFLAGS -mfp16-format=ieee"
+fi
+
 # Dynamic libraries need to be lazily loaded so that torch
 # can be imported on system without a GPU
 LDFLAGS="${LDFLAGS//-Wl,-z,now/-Wl,-z,lazy}"

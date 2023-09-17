@@ -19,6 +19,9 @@ source:
     # We've patch out the bug in GCC that makes it incompatible
     # https://github.com/conda-forge/ctng-compilers-feedstock/blob/7ea10c2526445beb9faff23efcc6bc40fc0079b5/recipe/meta.yaml#L23=
     - patches/remove_gcc_maximum_requirements.patch
+    # https://github.com/pytorch/pytorch/issues/87159
+    # https://github.com/pytorch/pytorch/commit/f0786ad7763f53838e44555cddb13b7a1fc1f4b9
+    - patches/0001-Use-zu-instead-of-ld-when-formatting-size_t.patch
 
 build:
   number: {{ number + 100 }}  # [blas_impl == "mkl"]
